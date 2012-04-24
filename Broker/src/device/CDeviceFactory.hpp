@@ -42,12 +42,9 @@
 #include "IPhysicalDevice.hpp"
 #include "types/CDeviceFID.hpp"
 
-namespace freedm
-{
-namespace broker
-{
-namespace device
-{
+namespace freedm {
+namespace broker {
+namespace device {
 
 #define REGISTER_DEVICE_CLASS(SUFFIX) \
 freedm::broker::device::CDeviceFactory::instance().RegisterDeviceClass( \
@@ -110,7 +107,7 @@ public:
 private:
     /// The io service
     boost::asio::io_service *m_ios;
-    
+
     /// The xml file
     std::string m_xml;
 
@@ -125,7 +122,7 @@ private:
 
     /// Client for the RTDS.
     CClientRTDS::RTDSPointer m_rtdsClient;
-    
+
     /// The clients for the FPGA
     std::stack<CClientRTDS::RTDSPointer> m_fidClients;
 
@@ -162,41 +159,6 @@ private:
 /// @limitations CDeviceFactory::init must be called before any devices are
 ///  created.
 ////////////////////////////////////////////////////////////////////////////////
-/*
-template <>
-void CDeviceFactory::CreateDevice<CDeviceFID>(const Identifier& deviceID)
-{
-    if (!m_initialized)
-    {
-        throw "CDeviceFactory::CreateDevice (private) called before init";
-    }
-    using boost::property_tree::ptree;
-    ptree xmlTree;
-    IDeviceStructure::DevicePtr ds;
-    IDevice::DevicePtr dev;
-    std::string host,port;
-    read_xml( m_xml, xmlTree ); 
-    // create and register the device structure
-    m_fidClients.push(CClientRTDS::Create(*m_ios, m_xml, deviceID));
-    try
-    {
-        host = xmlTree.get<std::string>(deviceID+".host");
-        port = xmlTree.get<std::string>(deviceID+".port");
-    }
-    catch(...)
-    {
-        throw std::runtime_error("Couldn't read hostname or port for FID "+deviceID);
-    }
-    m_fidClients.top()->Connect(host,port);
-    m_fidClients.top()->Run();
-    ds = IDeviceStructure::DevicePtr(new CDeviceStructureRTDS(m_fidClients.top()));
-    ds->Register(deviceID);
-    // create the new device from the structure
-    dev = IDevice::DevicePtr(new CDeviceFID(*m_manager, deviceID, ds));
-    // add the device to the manager
-    m_manager->AddDevice(dev);
-}
-*/
 template <class DeviceType>
 void CDeviceFactory::CreateDevice(const Identifier& deviceID)
 {
@@ -204,46 +166,14 @@ void CDeviceFactory::CreateDevice(const Identifier& deviceID)
     {
         throw "CDeviceFactory::CreateDevice (private) called before init";
     }
-    IDeviceStructure::DevicePtr ds;
-    IDevice::DevicePtr dev;
-#ifdef USE_DEVICE_RTDS
-    typename DeviceType::DevicePtr test(new DeviceType(*m_manager, deviceID, IDeviceStructure::DevicePtr(new CDeviceStructureGeneric())));
-    // create and register the device structure
-    if(device_cast<CDeviceFID>(test) != NULL)
-    {
-        using boost::property_tree::ptree;
-        ptree xmlTree;
-        std::string host,port;
-        read_xml( m_xml, xmlTree ); 
-        m_fidClients.push(CClientRTDS::Create(*m_ios, m_xml, deviceID));
-        try
-        {
-            host = xmlTree.get<std::string>(deviceID+".host");
-            port = xmlTree.get<std::string>(deviceID+".port");
-        }
-        catch(...)
-        {
-            throw std::runtime_error("Couldn't read hostname or port for FID "+deviceID);
-        }
-        m_fidClients.top()->Connect(host,port);
-        m_fidClients.top()->Run();
-        ds = IDeviceStructure::DevicePtr(new CDeviceStructureRTDS(m_fidClients.top()));
-        ds->Register(deviceID);
-        // create the new device from the structure
-        dev = IDevice::DevicePtr(new CDeviceFID(*m_manager, deviceID, ds));
-    }
-    else
-#endif
-    {
-        ds = CreateStructure();
-        ds->Register(deviceID);
-        // create the new device from the structure
-        dev = IDevice::DevicePtr(new DeviceType(*m_manager, deviceID, ds));
-    }
+    IDeviceStructure::DevicePtr ds = CreateStructure();
+    ds->Register(deviceID);
+    // create the new device from the structure
+    IDevice::DevicePtr dev = IDevice::DevicePtr(
+            new DeviceType(*m_manager, deviceID, ds));
     // add the device to the manager
     m_manager->AddDevice(dev);
 }
-
 
 } // namespace device
 } // namespace freedm
