@@ -47,9 +47,10 @@ namespace device
 ///  before doing anything with it.
 ////////////////////////////////////////////////////////////////////////////////
 CDeviceFactory::CDeviceFactory()
-: m_lineClient(CLineClient::TPointer()),
-m_rtdsClient(CClientRTDS::RTDSPointer()), m_manager(0), m_registry(),
-m_initialized(false) { }
+    : m_lineClient(CLineClient::TPointer()),
+      m_rtdsClient(CClientRTDS::RTDSPointer()), m_manager(0), m_registry(),
+      m_initialized(false)
+{ }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// CDeviceFactory::instance
@@ -100,12 +101,14 @@ void CDeviceFactory::init(CPhysicalDeviceManager& manager,
         boost::asio::io_service & ios, const std::string host,
         const std::string port, const std::string xml)
 {
+    m_ios = &ios;
+    m_xml = xml;
     m_manager = &manager;
 #if defined USE_DEVICE_PSCAD
     m_lineClient = CLineClient::Create(ios);
     m_lineClient->Connect(host, port);
 #elif defined USE_DEVICE_RTDS
-    m_rtdsClient = CClientRTDS::Create(ios, xml);
+    m_rtdsClient = CClientRTDS::Create(ios, xml, "rtds");
     m_rtdsClient->Connect(host, port);
     m_rtdsClient->Run();
 #endif

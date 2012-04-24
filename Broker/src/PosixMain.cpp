@@ -301,6 +301,11 @@ int main(int argc, char* argv[])
                         factory.CreateDevice(DevName_, "SST");
                         Logger.Info << "Added SST: " << DevName_ << std::endl;
                     }
+                    else if (DevType_ == "FID")
+                    {
+                        factory.CreateDevice(DevName_, "FID");
+                        Logger.Info << "Added FID: " << DevName_ << std::endl;
+                    }
                 }
                 else
                 {
