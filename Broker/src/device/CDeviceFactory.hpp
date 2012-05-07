@@ -46,7 +46,13 @@
 #include "IPhysicalDevice.hpp"
 #include "types/CDeviceFID.hpp"
 
+<<<<<<< HEAD
 static CLocalLogger CDeviceFactoryHPPLogger(__FILE__);
+=======
+namespace freedm {
+namespace broker {
+namespace device {
+>>>>>>> d4ec4bb40eb1e7a0f5520e93bd6605355dcd5e46
 
 namespace freedm {
 namespace broker {

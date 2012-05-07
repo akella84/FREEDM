@@ -349,7 +349,7 @@ void GMAgent::SystemState()
     nodestatus<<"Groups Elected/Formed: "<<m_groupselection<<"/"<<m_groupsformed<<std::endl;                        
     nodestatus<<"Groups Joined/Broken: "<<m_groupsjoined<<"/"<<m_groupsbroken<<std::endl;                        
     nodestatus<<"FID state: "<< m_phyDevManager.GetNetValue<broker::device::CDeviceFID>("state");
-    Logger.Status<<nodestatus.str()<<std::endl;
+    Logger.Warn<<nodestatus.str()<<std::endl;
 }
 ///////////////////////////////////////////////////////////////////////////////
 /// PushPeerList
